@@ -19,47 +19,20 @@ def get_arpabet(word, dictionary):
         return word
 
 
-def text_to_sequence(text, cleaner_names=["english_cleaners"], dictionary=None):
-    '''Converts a string of text to a sequence of IDs corresponding to the symbols in the text.
-
-    The text can optionally have ARPAbet sequences enclosed in curly braces embedded
-    in it. For example, "Turn left on {HH AW1 S S T AH0 N} Street."
-
+def text_to_sequence(text):
+  '''Converts a string of text to a sequence of IDs corresponding to the symbols in the text.
     Args:
       text: string to convert to a sequence
       cleaner_names: names of the cleaner functions to run the text through
-      dictionary: arpabet class with arpabet dictionary
-
     Returns:
       List of integers corresponding to the symbols in the text
-    '''
-    sequence = []
-    space = _symbols_to_sequence(' ')
-    # Check for curly braces and treat their contents as ARPAbet:
-    while len(text):
-        m = _curly_re.match(text)
-        if not m:
-            clean_text = _clean_text(text, cleaner_names)
-            if dictionary is not None:
-                clean_text = [get_arpabet(w, dictionary) for w in clean_text.split(" ")]
-                for i in range(len(clean_text)):
-                    t = clean_text[i]
-                    if t.startswith("{"):
-                        sequence += _arpabet_to_sequence(t[1:-1])
-                    else:
-                        sequence += _symbols_to_sequence(t)
-                    sequence += space
-            else:
-                sequence += _symbols_to_sequence(clean_text)
-            break
-        sequence += _symbols_to_sequence(_clean_text(m.group(1), cleaner_names))
-        sequence += _arpabet_to_sequence(m.group(2))
-        text = m.group(3)
-  
-    # remove trailing space
-    if dictionary is not None:
-        sequence = sequence[:-1] if sequence[-1] == space[0] else sequence
-    return sequence
+  '''
+  sequence = []
+
+  for symbol in text:
+    symbol_id = _symbol_to_id[symbol]
+    sequence += [symbol_id]
+  return sequence
 
 
 def sequence_to_text(sequence):
