@@ -21,10 +21,13 @@ def intersperse(lst, item):
     return result
 
 
-def parse_filelist(filelist_path, split_char="|"):
-    with open(filelist_path, encoding='utf-8') as f:
-        filepaths_and_text = [line.strip().split(split_char) for line in f]
-    return filepaths_and_text
+def parse_filelist(filename, split_char="|"):
+  import chardet
+  result = chardet.detect(open(filename, "rb").read())
+  print(result)
+  with open(filename,"r",encoding=result["encoding"]) as f:
+    filepaths_and_text = [line.strip().split(split_char) for line in f]
+  return filepaths_and_text
 
 
 def latest_checkpoint_path(dir_path, regex="grad_*.pt"):
